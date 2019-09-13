@@ -1,7 +1,7 @@
 final float fieldWidth = 1000;
 final float fieldHeight = 1000;
-final float defaultLifeSize = 10;
-final float defaultRegionSize = 80;
+final float defaultLifeSize = 50;
+final float defaultRegionSize = 300;
 final float initialPopulationSize = 100;
 
 
