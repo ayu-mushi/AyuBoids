@@ -14,7 +14,7 @@ void mousePressed(){
 void drawTriangle(int x, int y, int r, float rot) {
   pushMatrix();
   translate(x, y);  // 中心となる座標
-  console.log(degrees(rot));
+  //console.log(degrees(rot));
   rotate(rot - PI/2);
 
   // 円を均等に3分割する点を結び、三角形をつくる
@@ -113,25 +113,26 @@ class Life {
       //console.log("vel"+averageVelocity);
       //console.log("dis"+averageDistance);
 
-      averageVelocity.normalize();
+      averageVelocity = PVector.div(PVector.div(averageVelocity,averageVelocity.mag()), averageVelocity.mag());
       averageVelocity.mult(coeff_vel);
 
-      diff.normalize();
+      diff = PVector.div(PVector.div(diff,diff.mag()), diff.mag());
       diff.mult(coeff_pos);
 
-      averageDistance.normalize();
+      averageDistance = PVector.div(PVector.div(averageDistance,averageDistance.mag()), averageDistance.mag());
       averageDistance.mult(coeff_dis);
 
       velocity.mult(coeff_self);
 
       mousePosition = new PVector(mouseX, mouseY);
       vecToMouse = PVector.sub(mousePosition, position);
-      vecToMouse.normalize();
+      disToMouse = vecToMouse.mag();
+      vecToMouse = PVector.div(PVector.div(vecToMouse,disToMouse), disToMouse);
       if(isMouseClicked){
-        vecToMouse.mult(-1.4);
+        vecToMouse.mult(-50);
       }
       else {
-        vecToMouse.mult(0.6);
+        vecToMouse.mult(50);
       }
     }
     //console.log(averageVelocity);
