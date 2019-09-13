@@ -6,6 +6,11 @@ final float initialPopulationSize = 100;
 
 
 
+
+bool isMouseClicked=false;
+void mousePressed(){
+  isMouseClicked=!isMouseClicked;
+  }
 void drawTriangle(int x, int y, int r, float rot) {
   pushMatrix();
   translate(x, y);  // 中心となる座標
@@ -26,6 +31,7 @@ void drawTriangle(int x, int y, int r, float rot) {
 
   popMatrix();
 }
+
 class Life {
   PVector position;
   PVector velocity;
@@ -70,7 +76,7 @@ class Life {
     totalPosition.add(other.position);
     PVector diff = PVector.sub(position,other.position);
     if(this != other && diff.mag()<(regionSize+other.regionSize)/4){
-      float force = 1500/(diff.mag());
+      float force = 1200/(diff.mag());
       diff.normalize();
       diff.mult(force);
       distanceShouldMade.add(diff);
@@ -95,6 +101,8 @@ class Life {
     PVector averagePosition=new PVector(0,0);
     PVector diff=new PVector(0,0);
     PVector averageDistance=new PVector(0,0);
+    PVector mousePosition = new PVector(fieldWidth/2, fieldHeight/2);
+    PVector vecToMouse = PVector.sub(mousePosition, position);
 
     if(howMuchInRegion !=0){
       averageVelocity = PVector.div(totalVelocity, howMuchInRegion);
@@ -104,17 +112,31 @@ class Life {
       //console.log("pos"+averagePosition);
       //console.log("vel"+averageVelocity);
       //console.log("dis"+averageDistance);
+
+      averageVelocity.normalize();
       averageVelocity.mult(coeff_vel);
+
+      diff.normalize();
       diff.mult(coeff_pos);
+
+      averageDistance.normalize();
       averageDistance.mult(coeff_dis);
+
       velocity.mult(coeff_self);
+
+      mousePosition = new PVector(mouseX, mouseY);
+      vecToMouse = PVector.sub(mousePosition, position);
+      vecToMouse.normalize();
+      if(isMouseClicked){
+        vecToMouse.mult(-1.4);
+      }
+      else {
+        vecToMouse.mult(0.6);
+      }
     }
     //console.log(averageVelocity);
-    PVector newVelocity = new PVector (0,0);
-    newVelocity = PVector.add(PVector.add(PVector.add(velocity, diff), averageVelocity), averageDistance);
-    //newVelocity.add(averageVelocity)
-    //newVelocity.add(diff)
-    //newVelocity.add(averageDistance);
+    PVector newVelocity = new PVector(0,0);
+    newVelocity = PVector.add(PVector.add(PVector.add(PVector.add(velocity, diff), averageVelocity), averageDistance), vecToMouse);
     newVelocity.normalize();
     velocity = newVelocity;
 
@@ -171,10 +193,18 @@ bool isInRegion(Life l1, Life l2){
   return ((PVector.sub(l1.position, l2.position)).mag() <= (l1.regionSize+l2.size)/2);
 }
 
+
 void draw() {
   drawField();
   whatTimeIsIt++;
 
+  if(isMouseClicked){
+    fill(255,0,0);
+    ellipse(mouseX, mouseY, 5, 5);
+  }else{
+    fill(0,0,255);
+    ellipse(mouseX, mouseY, 5, 5);
+  }
   // collision
   lifes.forEach(function(Life l1){
     lifes.forEach(function(Life l2){
